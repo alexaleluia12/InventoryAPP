@@ -76,4 +76,13 @@ class ItemDaoClass {
         val allItems = itemDao.getAllItems().first()
         Assert.assertEquals(allItems[1], nitem)
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoDeleteItem_deleteItemFromDB() = runBlocking {
+        addTowItemToDB()
+        itemDao.delete(item2)
+        val allItems = itemDao.getAllItems().first()
+        Assert.assertEquals(allItems.size, 1)
+    }
 }

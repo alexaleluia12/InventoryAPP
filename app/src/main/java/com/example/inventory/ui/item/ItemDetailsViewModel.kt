@@ -58,9 +58,12 @@ class ItemDetailsViewModel(
                 itemsRepository.updateItem(
                     currentItem.copy(quantity = currentItem.quantity - 1)
                 )
-
-
         }
+    }
+    suspend fun deleteItem() {
+        itemsRepository.deleteItem(
+            uiState.value.itemDetails.toItem()
+        )
     }
 
 }
