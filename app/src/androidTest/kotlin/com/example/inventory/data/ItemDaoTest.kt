@@ -15,7 +15,7 @@ import java.io.IOException
 import kotlin.jvm.Throws
 
 @RunWith(AndroidJUnit4::class)
-class ItemDaoClass {
+class ItemDaoTest {
     private lateinit var itemDao: ItemDao
     private lateinit var inventoryDatabase: InventoryDatabase
 
@@ -84,5 +84,13 @@ class ItemDaoClass {
         itemDao.delete(item2)
         val allItems = itemDao.getAllItems().first()
         Assert.assertEquals(allItems.size, 1)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoGetItem_returnItemFromDB() = runBlocking {
+        addOneItemToDB()
+        val itemFromDB = itemDao.getItem(item1.id).first()
+        Assert.assertEquals(itemFromDB, item1)
     }
 }
