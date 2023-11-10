@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -43,6 +44,7 @@ import com.example.inventory.R
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import kotlinx.coroutines.launch
 import java.util.Currency
 import java.util.Locale
 
@@ -59,22 +61,25 @@ fun ItemEntryScreen(
     canNavigateBack: Boolean = true,
     viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    Scaffold(
-        topBar = {
-            InventoryTopAppBar(
-                title = stringResource(ItemEntryDestination.titleRes),
-                canNavigateBack = canNavigateBack,
-                navigateUp = onNavigateUp
-            )
-        }
-    ) { innerPadding ->
+    val corotineScope = rememberCoroutineScope()
+    Scaffold(topBar = {
+        InventoryTopAppBar(
+            title = stringResource(ItemEntryDestination.titleRes),
+            canNavigateBack = canNavigateBack,
+            navigateUp = onNavigateUp
+        )
+    }) { innerPadding ->
         ItemEntryBody(
             itemUiState = viewModel.itemUiState,
             onItemValueChange = viewModel::updateUiState,
-            onSaveClick = { },
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+            onSaveClick = {
+                // vincula ciclo de vida da corotine com o composable atual
+                corotineScope.launch {
+                    viewModel.saveItem()
+                    navigateBack()
+                }
+            },
+            modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         )
     }
@@ -90,7 +95,7 @@ fun ItemEntryBody(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large)),
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        ) {
+    ) {
         ItemInputForm(
             itemDetails = itemUiState.itemDetails,
             onValueChange = onItemValueChange,

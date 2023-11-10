@@ -33,6 +33,7 @@ class AppDataContainer(private val context: Context) : AppContainer {
      * Implementation for [ItemsRepository]
      */
     override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository()
+        // Room vai criar uma classe concreta para ser usada
+        OfflineItemsRepository(InventoryDatabase.getDatabase(context).itemDao())
     }
 }
